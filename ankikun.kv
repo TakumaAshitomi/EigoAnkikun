@@ -1,18 +1,41 @@
-MainScreen:
-
 <MainScreen>:
     BoxLayout:
         orientation: "vertical"
         size: root.size
         BoxLayout:
-            Label:
-                id: label1
-                text: "English word"
-            TextInput:
-                id: textinput1
+            size_hint_y: 0.2
+            Button:
+                id: listbutton
+                text: "WordList"
+                on_press: root.manager.current = 'sub'
         BoxLayout:
-            Label:
-                id: label2
-                text: "Trasrated"
-            TextInput:
-                id: textinput2
+            orientation: "vertical"
+            BoxLayout:
+                Label:
+                    id: label1
+                    font_size: 40
+                    text: "English word"
+                TextInput:
+                    id: textinput1
+                    font_size: 20
+            BoxLayout:
+                Label:
+                    id: label2
+                    font_size: 40
+                    text: "Trasrated word"
+                TextInput:
+                    id: textinput2
+            Button:
+                id: button1
+                text: "Save"
+                size_hint_y: 0.5
+                on_press: root.save_button
+<ListScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        size: root.size
+        Button:
+            id: Back
+            text: "Back to main menu"
+            font_size: 35
+            on_press: root.manager.current = 'main'
