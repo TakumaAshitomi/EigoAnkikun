@@ -1,4 +1,6 @@
 <MainScreen>:
+    englishword: englishword
+    translatedword: translatedword
     BoxLayout:
         orientation: "vertical"
         size: root.size
@@ -16,7 +18,7 @@
                     font_size: 40
                     text: "English word"
                 TextInput:
-                    id: textinput1
+                    id: englishword
                     font_size: 20
             BoxLayout:
                 Label:
@@ -24,12 +26,12 @@
                     font_size: 40
                     text: "Trasrated word"
                 TextInput:
-                    id: textinput2
+                    id: translatedword
             Button:
                 id: button1
                 text: "Save"
                 size_hint_y: 0.5
-                on_press: root.save_button
+                on_press: root.save_button()
 <ListScreen>:
     BoxLayout:
         orientation: "vertical"
