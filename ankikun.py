@@ -2,10 +2,13 @@ from kivy.app import App
 import japanize_kivy
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
+<<<<<<< HEAD
 import sqlite3
 conn = sqlite3.connect("example.sqlite3")
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS words(id int PRIMARY KEY, english text, translated text)''')
+=======
+>>>>>>> master
 
 class ListScreen(Screen,Widget):
     
