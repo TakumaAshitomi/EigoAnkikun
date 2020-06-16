@@ -32,12 +32,31 @@
                 text: "Save"
                 size_hint_y: 0.5
                 on_press: root.save_button()
+<ListButton>:
+    
 <ListScreen>:
     BoxLayout:
         orientation: "vertical"
-        size: root.size
-        Button:
-            id: Back
-            text: "Back to main menu"
-            font_size: 35
-            on_press: root.manager.current = 'main'
+        BoxLayout:
+            size_hint_y: 0.2
+            Button:
+                id: Back
+                text: "Back to main menu"
+                font_size: 35
+                on_press: root.manager.current = 'main'
+            Button:
+                id: Quiz
+                text: "Quiz"
+                font_size: 35
+        RecycleView:
+            viewclass: 'Button'
+            data: [{'text': str(x)} for x in root.data_items]
+            RecycleGridLayout:
+                cols: 2
+                default_size: None, dp(26)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                multiselect: True
+                touch_multiselect: True
