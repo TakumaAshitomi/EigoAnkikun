@@ -1,14 +1,65 @@
 from kivy.app import App
 import japanize_kivy
 from kivy.uix.widget import Widget
+from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.recycleview import RecycleView
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, BooleanProperty, StringProperty, ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivy.uix.behaviors import FocusBehavior
+from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.uix.recyclegridlayout import RecycleGridLayout
+from kivy.uix.popup import Popup
+
 import sqlite3
 conn = sqlite3.connect("example.sqlite3")
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS words(id int PRIMARY KEY, english text, translated text)''')
+
+class TextInputPopup(Popup):
+    obj = ObjectProperty(None)
+    obj_text = StringProperty("")
+
+    def __init__(self, obj, **kwargs):
+        super(TextInputPopup, self).__init__(**kwargs)
+        self.obj = obj
+        self.obj_text = obj.text
+
+class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
+                                  RecycleGridLayout):
+    ''' Adds selection and focus behaviour to the view. '''
+
+class SelectableButton(RecycleDataViewBehavior, Button):
+    ''' Add selection support to the Button '''
+    index = None
+    selected = BooleanProperty(False)
+    selectable = BooleanProperty(True)
+
+    def refresh_view_attrs(self, rv, index, data):
+        ''' Catch and handle the view changes '''
+        self.index = index
+        return super(SelectableButton, self).refresh_view_attrs(rv, index, data)
+
+    def on_touch_down(self, touch):
+        ''' Add selection on touch down '''
+        if super(SelectableButton, self).on_touch_down(touch):
+            return True
+        if self.collide_point(*touch.pos) and self.selectable:
+            return self.parent.select_with_touch(self.index, touch)
+
+    def apply_selection(self, rv, index, is_selected):
+        ''' Respond to the selection of items in the view. '''
+        self.selected = is_selected
+
+    def on_press(self):
+        popup = TextInputPopup(self)
+        popup.open()
+
+    def update_changes(self, txt):
+        self.text = txt
+        conn.commit()
+        #ここにデータベースの更新の文を入れる
 
 class ListScreen(Screen,BoxLayout,Widget):
     data_items = ListProperty([])
