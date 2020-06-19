@@ -42,11 +42,14 @@
         TextInput:
             id: txtinput
             text: root.obj_text
+        TextInput:
+            id: txtinput2
+            text: root.obj_text2
         Button:
             size_hint: 1, 0.2
             text: "Save Changes"
             on_release:
-                root.obj.update_changes(txtinput.text)
+                root.obj.update_changes(txtinput.text,txtinput2.text)
                 root.dismiss()
         Button:
             size_hint: 1, 0.2

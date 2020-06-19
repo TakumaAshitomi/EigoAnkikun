@@ -15,16 +15,19 @@ from kivy.uix.popup import Popup
 import sqlite3
 conn = sqlite3.connect("example.sqlite3")
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS words(id int PRIMARY KEY, english text, translated text)''')
+c.execute('''CREATE TABLE IF NOT EXISTS words(english text not null unique, translated text not null unique)''')
 
 class TextInputPopup(Popup):
     obj = ObjectProperty(None)
     obj_text = StringProperty("")
-
+    obj_text2 = StringProperty("")
     def __init__(self, obj, **kwargs):
         super(TextInputPopup, self).__init__(**kwargs)
         self.obj = obj
         self.obj_text = obj.text
+        c.execute('''select translated from words where english = ?''', (self.obj.text,))
+        o = c.fetchone()
+        self.obj_text2 = o[0]
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
@@ -56,8 +59,11 @@ class SelectableButton(RecycleDataViewBehavior, Button):
         popup = TextInputPopup(self)
         popup.open()
 
-    def update_changes(self, txt):
+    def update_changes(self, txt, txt2):
+        before_text = self.text
         self.text = txt
+        self.text2 = txt2
+        c.execute('''update words set english=?, translated=? where english=? ''', (txt,txt2,before_text))
         conn.commit()
         #ここにデータベースの更新の文を入れる
 
