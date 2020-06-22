@@ -11,11 +11,16 @@ from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recyclegridlayout import RecycleGridLayout
 from kivy.uix.popup import Popup
-
+import re
 import sqlite3
 conn = sqlite3.connect("example.sqlite3")
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS words(english text not null unique, translated text not null unique)''')
+
+def checkAlnum(word):
+  alnum = re.compile(r'^[a-zA-Z0-9]+$')
+  result = alnum.match(word) is not None
+  return result
 
 class TextInputPopup(Popup):
     obj = ObjectProperty(None)
@@ -25,9 +30,9 @@ class TextInputPopup(Popup):
         super(TextInputPopup, self).__init__(**kwargs)
         self.obj = obj
         self.obj_text = obj.text
-        c.execute('''select translated from words where english = ?''', (self.obj.text,))
-        o = c.fetchone()
-        self.obj_text2 = o[0]
+        #c.execute('''select translated from words where english = ?''', (self.obj.text,))
+        #o = c.fetchone()
+        #self.obj_text2 = o[0]
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
@@ -59,11 +64,14 @@ class SelectableButton(RecycleDataViewBehavior, Button):
         popup = TextInputPopup(self)
         popup.open()
 
-    def update_changes(self, txt, txt2):
+    def update_changes(self, txt):#, txt2):
         before_text = self.text
         self.text = txt
-        self.text2 = txt2
-        c.execute('''update words set english=?, translated=? where english=? ''', (txt,txt2,before_text))
+        #self.text2 = txt2
+        if checkAlnum(before_text):
+            c.execute('''update words set english=? where english=? ''', (txt,before_text))
+        else:
+            c.execute('''update words set translated=? where translated=? ''', (txt,before_text))
         conn.commit()
         #ここにデータベースの更新の文を入れる
 
