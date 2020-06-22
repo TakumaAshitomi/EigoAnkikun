@@ -32,7 +32,38 @@
                 text: "Save"
                 size_hint_y: 0.5
                 on_press: root.save_button()
+<TextInputPopup>:
+    title: "Popup"
+    size_hint: None, None
+    size: 400, 400
+    auto_dismiss: False
+    BoxLayout:
+        orientation: "vertical"
+        TextInput:
+            id: txtinput
+            text: root.obj_text
+        #TextInput:
+        #    id: txtinput2
+        #    text: root.obj_text2
+        Button:
+            size_hint: 1, 0.2
+            text: "Save Changes"
+            on_release:
+                root.obj.update_changes(txtinput.text)#,txtinput2.text)
+                root.dismiss()
+        Button:
+            size_hint: 1, 0.2
+            text: "Cancel Changes"
+            on_release: root.dismiss()
 
+<SelectableButton>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
 <ListScreen>:
     BoxLayout:
         orientation: "vertical"
@@ -49,9 +80,9 @@
                 text: "Quiz"
                 font_size: 35
         RecycleView:
-            viewclass: 'Button'
+            viewclass: 'SelectableButton'
             data: [{'text': str(x)} for x in root.data_items]
-            RecycleGridLayout:
+            SelectableRecycleGridLayout:
                 cols: 2
                 default_size: None, dp(26)
                 default_size_hint: 1, None
