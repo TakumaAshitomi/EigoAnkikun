@@ -30,9 +30,6 @@ class TextInputPopup(Popup):
         super(TextInputPopup, self).__init__(**kwargs)
         self.obj = obj
         self.obj_text = obj.text
-        #c.execute('''select translated from words where english = ?''', (self.obj.text,))
-        #o = c.fetchone()
-        #self.obj_text2 = o[0]
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
@@ -64,16 +61,14 @@ class SelectableButton(RecycleDataViewBehavior, Button):
         popup = TextInputPopup(self)
         popup.open()
 
-    def update_changes(self, txt):#, txt2):
+    def update_changes(self, txt):
         before_text = self.text
         self.text = txt
-        #self.text2 = txt2
         if checkAlnum(before_text):
             c.execute('''update words set english=? where english=? ''', (txt,before_text))
         else:
             c.execute('''update words set translated=? where translated=? ''', (txt,before_text))
         conn.commit()
-        #ここにデータベースの更新の文を入れる
 
 class ListScreen(Screen,BoxLayout,Widget):
     data_items = ListProperty([])
@@ -85,7 +80,6 @@ class ListScreen(Screen,BoxLayout,Widget):
     def get_users(self):
         c.execute('''SELECT english, translated FROM words''')
         rows = c.fetchall()
-        #data_itemsに値を入れる
         for row in rows:
             for col in row:
                 self.data_items.append(col)
@@ -98,13 +92,12 @@ class MainScreen(Screen,Widget):
     def save_button(self):
         c.execute('''insert into words(english, translated) values(:english, :translated)''',{"english":self.englishword.text,"translated":self.translatedword.text})
         conn.commit()
-        #for row in c.execute('''select * from words'''):
 
 class AnkikunApp(App):
 
     def __init__(self, **kwargs):
         super(AnkikunApp, self).__init__(**kwargs)
-#        self.title = "英語暗記くん"
+        self.title = "英語暗記くん"
 
     def build(self):
         self.sm = ScreenManager()
