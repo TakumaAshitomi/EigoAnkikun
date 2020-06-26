@@ -70,6 +70,14 @@ class SelectableButton(RecycleDataViewBehavior, Button):
             c.execute('''update words set translated=? where translated=? ''', (txt,before_text))
         conn.commit()
 
+    def delete_word(self):
+        text = self.text
+        if checkAlnum(text):
+            c.execute('''delete from words where english=? ''', (text,))
+        else:
+            c.execute('''delete from words where translated=? ''', (text,))
+        conn.commit()
+
 class ListScreen(Screen,BoxLayout,Widget):
     data_items = ListProperty([])
 
