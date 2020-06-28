@@ -2,6 +2,7 @@ from kivy.app import App
 import japanize_kivy
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.recycleview import RecycleView
 from kivy.properties import ListProperty, BooleanProperty, StringProperty, ObjectProperty
@@ -30,6 +31,15 @@ class TextInputPopup(Popup):
         super(TextInputPopup, self).__init__(**kwargs)
         self.obj = obj
         self.obj_text = obj.text
+
+class QuizPopup(Popup):
+    quiz_items = ListProperty([])
+    def __init__(self, **kwargs):
+        super(QuizPopup, self).__init__(**kwargs)
+        c.execute('''SELECT * FROM words ORDER BY RANDOM() LIMIT 1''')
+        row = c.fetchone
+        for col in row:
+            self.quiz_items.append(col)
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
@@ -91,6 +101,10 @@ class ListScreen(Screen,BoxLayout,Widget):
         for row in rows:
             for col in row:
                 self.data_items.append(col)
+
+    def quiz_on_press(self):
+        popup = QuizPopup(self)
+        popup.open()
 
 class MainScreen(Screen,Widget):
 
