@@ -69,11 +69,12 @@
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: root.quiz_items[0]
+            text: root.quiz_items1#[0]
         Label:
-            text: root.quiz_items[1]
+            text: root.quiz_items2#[1]
         Button:
             text: "Exit"
+            on_release: root.dismiss()
 
 <SelectableButton>:
     # Draw a background to indicate selection

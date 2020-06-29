@@ -34,13 +34,16 @@ class TextInputPopup(Popup):
 
 class QuizPopup(Popup):
     quiz_items = ListProperty([])
+    quiz_items1 = StringProperty("")
+    quiz_items2 = StringProperty("")
     def __init__(self, **kwargs):
         super(QuizPopup, self).__init__(**kwargs)
         c.execute('''SELECT * FROM words ORDER BY RANDOM() LIMIT 1''')
-        row = c.fetchone
+        row = c.fetchone()
         for col in row:
             self.quiz_items.append(col)
-
+        self.quiz_items1 = self.quiz_items[0]
+        self.quiz_items2 = self.quiz_items[1]
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
     ''' Adds selection and focus behaviour to the view. '''
@@ -103,7 +106,7 @@ class ListScreen(Screen,BoxLayout,Widget):
                 self.data_items.append(col)
 
     def quiz_on_press(self):
-        popup = QuizPopup(self)
+        popup = QuizPopup()
         popup.open()
 
 class MainScreen(Screen,Widget):
