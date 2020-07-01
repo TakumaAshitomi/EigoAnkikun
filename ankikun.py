@@ -32,6 +32,12 @@ class TextInputPopup(Popup):
         self.obj = obj
         self.obj_text = obj.text
 
+class SuccessPopup(Popup):
+    pass
+
+class FailedPopup(Popup):
+    pass
+
 class QuizPopup(Popup):
     quiz_items = ListProperty([])
     quiz_items1 = StringProperty("")
@@ -44,6 +50,17 @@ class QuizPopup(Popup):
             self.quiz_items.append(col)
         self.quiz_items1 = self.quiz_items[0]
         self.quiz_items2 = self.quiz_items[1]
+        
+    def quiz_answer_press(self, quiz_item, answer):
+        c.execute('''select translated from words where english=?''', (quiz_item,))
+        quiz = c.fetchone()
+        if quiz[0] == answer:
+            popup = SuccessPopup()
+        else:
+            popup = FailedPopup()
+            print(quiz)
+        popup.open()
+
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
     ''' Adds selection and focus behaviour to the view. '''
@@ -108,7 +125,7 @@ class ListScreen(Screen,BoxLayout,Widget):
     def quiz_on_press(self):
         popup = QuizPopup()
         popup.open()
-
+    
 class MainScreen(Screen,Widget):
 
     def __init__(self, **kwargs):

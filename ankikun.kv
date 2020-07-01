@@ -61,6 +61,18 @@
             size_hint: 1, 0.2
             text: "Cancel Changes"
             on_release: root.dismiss()
+<SuccessPopup>:
+    title: "Your answer is.."
+    size_hint: None, None
+    size: 200, 200
+    Label:  
+        text: "Correct answer!"
+<FailedPopup>:
+    title: "Your answer is.."
+    size_hint: None, None
+    size: 200, 200
+    Label:
+        text: "Incorrect answer...."
 <QuizPopup>:
     title: "Quiz"
     size_hint: None, None
@@ -69,9 +81,12 @@
     BoxLayout:
         orientation: "vertical"
         Label:
-            text: root.quiz_items1#[0]
-        Label:
-            text: root.quiz_items2#[1]
+            text: root.quiz_items1
+        TextInput:
+            id: answerinput
+        Button:
+            text: "Final Answer!"
+            on_release: root.quiz_answer_press(root.quiz_items1, answerinput.text)
         Button:
             text: "Exit"
             on_release: root.dismiss()
