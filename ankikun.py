@@ -12,6 +12,7 @@ from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recyclegridlayout import RecycleGridLayout
 from kivy.uix.popup import Popup
+
 import re
 import sqlite3
 conn = sqlite3.connect("example.sqlite3")
@@ -36,6 +37,9 @@ class SuccessPopup(Popup):
     pass
 
 class FailedPopup(Popup):
+    pass
+
+class ErrorPopup(Popup):
     pass
 
 class QuizPopup(Popup):
@@ -94,19 +98,27 @@ class SelectableButton(RecycleDataViewBehavior, Button):
     def update_changes(self, txt):
         before_text = self.text
         self.text = txt
-        if checkAlnum(before_text):
-            c.execute('''update words set english=? where english=? ''', (txt,before_text))
-        else:
-            c.execute('''update words set translated=? where translated=? ''', (txt,before_text))
-        conn.commit()
+        try:
+            if checkAlnum(before_text):
+                c.execute('''update words set english=? where english=? ''', (txt,before_text))
+            else:
+                c.execute('''update words set translated=? where translated=? ''', (txt,before_text))
+            conn.commit()
+        except sqlite3.Error as e:
+            popup = ErrorPopup()
+            popup.open()
 
     def delete_word(self):
         text = self.text
-        if checkAlnum(text):
-            c.execute('''delete from words where english=? ''', (text,))
-        else:
-            c.execute('''delete from words where translated=? ''', (text,))
-        conn.commit()
+        try:
+            if checkAlnum(text):
+                c.execute('''delete from words where english=? ''', (text,))
+            else:
+                c.execute('''delete from words where translated=? ''', (text,))
+            conn.commit()
+        except sqlite3.Error as e:
+            popup = ErrorPopup()
+            popup.open()
 
 class ListScreen(Screen,BoxLayout,Widget):
     data_items = ListProperty([])
@@ -132,9 +144,13 @@ class MainScreen(Screen,Widget):
         super().__init__(**kwargs)
 
     def save_button(self):
-        c.execute('''insert into words(english, translated) values(:english, :translated)''',{"english":self.englishword.text,"translated":self.translatedword.text})
-        conn.commit()
-
+        try:
+            c.execute('''insert into words(english, translated) values(:english, :translated)''',{"english":self.englishword.text,"translated":self.translatedword.text})
+            conn.commit()
+        except sqlite3.Error as e:
+            popup = ErrorPopup()
+            popup.open()
+   
 class AnkikunApp(App):
 
     def __init__(self, **kwargs):
