@@ -2,6 +2,7 @@ from kivy.app import App
 import japanize_kivy
 from kivy.uix.widget import Widget
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.recycleview import RecycleView
 from kivy.properties import ListProperty, BooleanProperty, StringProperty, ObjectProperty
@@ -30,6 +31,35 @@ class TextInputPopup(Popup):
         super(TextInputPopup, self).__init__(**kwargs)
         self.obj = obj
         self.obj_text = obj.text
+
+class SuccessPopup(Popup):
+    pass
+
+class FailedPopup(Popup):
+    pass
+
+class QuizPopup(Popup):
+    quiz_items = ListProperty([])
+    quiz_items1 = StringProperty("")
+    quiz_items2 = StringProperty("")
+    def __init__(self, **kwargs):
+        super(QuizPopup, self).__init__(**kwargs)
+        c.execute('''SELECT * FROM words ORDER BY RANDOM() LIMIT 1''')
+        row = c.fetchone()
+        for col in row:
+            self.quiz_items.append(col)
+        self.quiz_items1 = self.quiz_items[0]
+        self.quiz_items2 = self.quiz_items[1]
+        
+    def quiz_answer_press(self, quiz_item, answer):
+        c.execute('''select translated from words where english=?''', (quiz_item,))
+        quiz = c.fetchone()
+        if quiz[0] == answer:
+            popup = SuccessPopup()
+        else:
+            popup = FailedPopup()
+            print(quiz)
+        popup.open()
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior,
                                   RecycleGridLayout):
@@ -92,6 +122,10 @@ class ListScreen(Screen,BoxLayout,Widget):
             for col in row:
                 self.data_items.append(col)
 
+    def quiz_on_press(self):
+        popup = QuizPopup()
+        popup.open()
+    
 class MainScreen(Screen,Widget):
 
     def __init__(self, **kwargs):
