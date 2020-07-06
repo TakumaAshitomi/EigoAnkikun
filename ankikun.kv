@@ -73,10 +73,17 @@
     size: 200, 200
     Label:
         text: "Incorrect answer...."
+<ErrorPopup>:
+    title: "Error!"
+    size: 250, 150
+    size_hint: None, None
+    Label:
+        text: "DB error!"
+        font_size: 40
 <QuizPopup>:
     title: "Quiz"
     size_hint: None, None
-    size: 400, 400
+    size: 400, 200
     auto_dismiss: False
     BoxLayout:
         orientation: "vertical"
